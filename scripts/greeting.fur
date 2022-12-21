@@ -1,0 +1,2 @@
+ono name equaws "John Doe"~
+bark("Hello there, ^name!")~
