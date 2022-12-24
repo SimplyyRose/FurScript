@@ -14,7 +14,7 @@ class Script:
         for line in self.file:
             # Strip and ignore empty lines
             line = line.rstrip("\n")
-            if line == "" or line.startswith("//"): 
+            if line == "" or line.lstrip().startswith("//"): 
                 continue
             # Continue to form body
             body += line
