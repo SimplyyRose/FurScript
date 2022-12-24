@@ -12,7 +12,7 @@ methods = {
 equaws = "equaws"
 untiw = "untiw"
 
-statements = ["sniff", "fur"]
+keyWords = ["sniff", "fur", "bop"]
 
 def parse(script, body):
     parsing = True
@@ -72,23 +72,23 @@ def findEndingIndex(body, index):
     endingIndex = index
 
     while openBraces > 0:
-        nextBopIndex = body.find("bop", endingIndex)
-        nextFurIndex = body.find("fur", endingIndex)
-        nextSniffIndex = body.find("sniff", endingIndex)
-        numbers = [nextBopIndex, nextFurIndex, nextSniffIndex]
+        numbers = [0] * len(keyWords)
 
-        # smallest number in numbers
+        for i in range(len(keyWords)):
+            numbers[i] = body.find(keyWords[i], endingIndex)
+
         smallest = min(i for i in numbers if i > 0)
+        for i in range(len(numbers)):
+            if numbers[i] != smallest:
+                continue
 
-        if smallest == nextBopIndex:
-            openBraces -= 1
-            endingIndex = smallest + 3
-        elif smallest == nextFurIndex:
-            openBraces += 1
-            endingIndex = smallest + 3
-        elif smallest == nextSniffIndex:
-            openBraces += 1
-            endingIndex = smallest + 5
+            keyWord = keyWords[i]
+            endingIndex = smallest + len(keyWord)
+
+            if keyWord == "bop":
+                openBraces -= 1
+            else:
+                openBraces += 1
     return endingIndex
 
 def typeFromString(script, string):
@@ -134,9 +134,6 @@ def _parseInstruction(script, instruction):
         # Parse name and args from instruction
         name = instruction[:instruction.find('(')]
         args = instruction[instruction.find('(') + 1:instruction.find(')')]
-
-        # Split args by commas that aren't in a string
-        #args = re.split(r'",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"', args)
 
         # Check if method exists
         if name in methods:
