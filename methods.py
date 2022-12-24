@@ -7,6 +7,10 @@ def bark(script, message):
         for var in script.variables:
             if var in message:
                 message = message.replace('^' + var, str(script.variables[var].value))
+        for word in message.split(' '):
+            word = word[1:-1]
+            if word.startswith('^'):
+                message = message.replace(word, "None")
 
     # Extract string from first and last quote
     if message.startswith('"') and message.endswith('"'):
@@ -28,3 +32,7 @@ def paw(script, message):
 def sweep(script, message):
     value = int(message)
     sleep(value)
+
+def bite(script, message):
+    if message.startswith('^'):
+        del script.variables[message[1:]]

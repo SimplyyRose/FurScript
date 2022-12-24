@@ -6,7 +6,8 @@ import methods
 methods = {
     "bark": methods.bark,
     "paw": methods.paw,
-    "sweep": methods.sweep
+    "sweep": methods.sweep,
+    "bite": methods.bite
 }
 
 equaws = "equaws"
@@ -29,7 +30,7 @@ def parse(script, body):
             contents = substring[substring.find(')') + 1:index]
 
             leftSide = typeFromString(script, condition.split(equaws)[0])
-            rightSide = typeFromString(script, condition.split(equaws)[1])   
+            rightSide = typeFromString(script, condition.split(equaws)[1])
 
             if leftSide == rightSide:
                 parse(script, contents)
@@ -62,6 +63,9 @@ def _resolveString(script, string):
     for var in script.variables:
         if '^' + var in string:
             string = string.replace('^' + var, str(script.variables[var].value))
+    for word in string.split(' '):
+        if word.startswith('^'):
+            string = string.replace(word, "None")
     return string
 
 def findEndingIndex(body, index):

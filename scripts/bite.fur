@@ -1,0 +1,7 @@
+ono testValue equaws 5~
+bark("^testValue")~
+bite(^testValue)~
+
+sniff(^testValue equaws "None")
+    bark("Test value was successfully unregistered")~
+bop
