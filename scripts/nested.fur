@@ -1,0 +1,45 @@
+owo counter equaws 0~
+owo running equaws False~
+owo name equaws "John"~
+
+// Runs a counter for 5 seconds
+// Then stops the for loop when the counter is completed
+fur(^running untiw True)
+    paw(^counter, 1)~
+    bark("Running for ^counter seconds!")~
+    sweep(1)~
+
+    // Back to back sniffs
+    sniff(^name equaws "John")
+        bark("Hi John!")~
+    bop
+
+    sniff(^name equaws "John")
+        bark("Hi again John!")~
+    bop
+
+    // Fur loop inside of a sniff inside of a sniff
+    sniff(^name equaws "John")
+        bark("Zone one!")~
+
+        sniff(^name equaws "John")
+            bark("Zone two!")~
+            owo subCounter equaws 0~
+
+            fur(^subCounter untiw 5)
+                paw(^subCounter, 1)~
+                bark("Meowing ^subCounter")~
+            bop
+        bop
+    bop
+
+    // Sniff inside of a sniff but mainly just exit logic
+    sniff(^counter equaws 5)
+        owo running equaws True~
+        bark("All finished!")~
+
+        sniff(^name equaws "John")
+            bark("Goodbye John!")~
+        bop
+    bop
+bop

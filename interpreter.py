@@ -12,30 +12,32 @@ methods = {
 equaws = "equaws"
 untiw = "untiw"
 
+statements = ["sniff", "fur"]
+
 def parse(script, body):
     parsing = True
 
     while parsing:
         # Check for if statement
-        if body.startswith("yif"):
-            index = body.find("bop")
+        if body.startswith("sniff"):
+            index = findEndingIndex(body, 5)
             substring = body[:index]
-            body = body[index + 3:]
-            
+            body = body[index:]
+                        
             # Parse condition and contents
             condition = substring[substring.find('(') + 1:substring.find(')')]
             contents = substring[substring.find(')') + 1:index]
 
             leftSide = typeFromString(script, condition.split(equaws)[0])
-            rightSide = typeFromString(script, condition.split(equaws)[1])            
+            rightSide = typeFromString(script, condition.split(equaws)[1])   
 
             if leftSide == rightSide:
                 parse(script, contents)
         elif body.startswith("fur"):
-            index = body.find("bop")
-            substring = body[:index]
-            body = body[index + 3:]
-            
+            index = findEndingIndex(body, 3)
+            substring = body[:index - 3]
+            body = body[index:]
+
             # Parse condition and contents
             condition = substring[substring.find('(') + 1:substring.find(')')]
             contents = substring[substring.find(')') + 1:index]
@@ -62,13 +64,37 @@ def _resolveString(script, string):
             string = string.replace('^' + var, str(script.variables[var].value))
     return string
 
+def findEndingIndex(body, index):
+    openBraces = 1
+    endingIndex = index
+
+    while openBraces > 0:
+        nextBopIndex = body.find("bop", endingIndex)
+        nextFurIndex = body.find("fur", endingIndex)
+        nextSniffIndex = body.find("sniff", endingIndex)
+        numbers = [nextBopIndex, nextFurIndex, nextSniffIndex]
+
+        # smallest number in numbers
+        smallest = min(i for i in numbers if i > 0)
+
+        if smallest == nextBopIndex:
+            openBraces -= 1
+            endingIndex = smallest + 3
+        elif smallest == nextFurIndex:
+            openBraces += 1
+            endingIndex = smallest + 3
+        elif smallest == nextSniffIndex:
+            openBraces += 1
+            endingIndex = smallest + 5
+    return endingIndex
+
 def typeFromString(script, string):
     string = _resolveString(script, string)
 
     if string.startswith('"') and string.endswith('"'):
         return string[1:-1]
-    elif string == "true" or string == "false":
-        return bool(string)
+    elif string == "True" or string == "False":
+        return string == "True"
     elif string.isnumeric():
         return int(string)
     elif string.endswith('f'):
