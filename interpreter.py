@@ -1,5 +1,4 @@
-from variable import Variable
-from modifier import Modifier
+from variable import Variable, Modifier
 import re
 import methods
 
