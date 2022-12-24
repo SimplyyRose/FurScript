@@ -1,0 +1,2 @@
+ono object equaws {"name": "John Smith", "age": 32, "city": "New York"}~
+bark("Hello I'm ^object["name"] from ^object["city"].")~

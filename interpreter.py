@@ -1,6 +1,7 @@
 from variable import Variable, Modifier
 import re
 import methods
+import json
 
 methods = {
     "bark": methods.bark,
@@ -60,8 +61,20 @@ def parse(script, body):
 
 def _resolveString(script, string):
     for var in script.variables:
-        if '^' + var in string:
-            string = string.replace('^' + var, str(script.variables[var].value))
+        varString = "^" + var
+        while varString in string:
+            value = script.variables[var].value
+            # If value is dict
+            if type(value) is dict:
+                index = string.find(varString)
+                startingPoint = index + len(varString) + 1
+                if string[startingPoint] == '[' and string.find(']', startingPoint) != -1:
+                    key = string[startingPoint + 1:string.find(']', startingPoint)]
+                    string = string.replace(varString + '["' + key + '"]', str(value[key]))
+                else:
+                    string = string.replace('^' + var, str(value))
+            else:
+                string = string.replace('^' + var, str(value))
     for word in string.split(' '):
         if word.startswith('^'):
             string = string.replace(word, "None")
@@ -94,7 +107,9 @@ def findEndingIndex(body, index):
 def typeFromString(script, string):
     string = _resolveString(script, string)
 
-    if string.startswith('"') and string.endswith('"'):
+    if string.startswith('{') and string.endswith('}'):
+        return json.loads(string)
+    elif string.startswith('"') and string.endswith('"'):
         return string[1:-1]
     elif string == "True" or string == "False":
         return string == "True"

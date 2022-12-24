@@ -2,11 +2,24 @@ from time import sleep
 
 def bark(script, message):
     # TODO: Add support for multiple arguments and special operations
+    # TODO: Centralize this please for the love of Robin Hood, the disney movie one
     # Replace all variables with their values
     if '^' in message:
         for var in script.variables:
-            if var in message:
-                message = message.replace('^' + var, str(script.variables[var].value))
+            varString = "^" + var
+            while varString in message:
+                value = script.variables[var].value
+                # If value is dict
+                if type(value) is dict:
+                    index = message.find(varString)
+                    startingPoint = index + len(varString)
+                    if message[startingPoint] == '[' and message.find(']', startingPoint) != -1:
+                        key = message[startingPoint + 1:message.find(']', startingPoint)]
+                        message = message.replace(varString + '[' + key + ']', str(value[key[1:-1]]))
+                    else:
+                        message = message.replace('^' + var, str(value))
+                else:
+                    message = message.replace('^' + var, str(value))
         for word in message.split(' '):
             word = word[1:-1]
             if word.startswith('^'):
