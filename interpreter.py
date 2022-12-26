@@ -7,7 +7,8 @@ methods = {
     "bark": methods.bark,
     "paw": methods.paw,
     "sweep": methods.sweep,
-    "bite": methods.bite
+    "bite": methods.bite,
+    "pwompt": methods.pwompt
 }
 
 equaws = "equaws"
@@ -105,7 +106,10 @@ def findEndingIndex(body, index):
     return endingIndex
 
 def typeFromString(script, string):
-    string = _resolveString(script, string)
+    if string.endswith(')'):
+        return handleMethod(script, string)
+    else:
+        string = _resolveString(script, string)
 
     if string.startswith('{') and string.endswith('}'):
         return json.loads(string)
@@ -157,11 +161,14 @@ def _parseInstruction(script, instruction):
         if name in script.variables and script.variables[name].modifier is not Modifier.ONO:
             script.variables[name].value = value
     else:
-        # Parse name and args from instruction
-        name = instruction[:instruction.find('(')]
-        args = instruction[instruction.find('(') + 1:instruction.find(')')]
+        handleMethod(script, instruction)
 
-        # Check if method exists
-        if name in methods:
-            method = methods[name]
-            method(script, args)
+def handleMethod(script, instruction):
+    # Parse name and args from instruction
+    name = instruction[:instruction.find('(')]
+    args = instruction[instruction.find('(') + 1:instruction.find(')')]
+
+    # Check if method exists
+    if name in methods:
+        method = methods[name]
+        return method(script, args)

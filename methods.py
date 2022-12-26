@@ -49,3 +49,6 @@ def sweep(script, message):
 def bite(script, message):
     if message.startswith('^'):
         del script.variables[message[1:]]
+
+def pwompt(script, message):
+    return input(message)

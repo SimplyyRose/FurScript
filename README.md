@@ -36,3 +36,11 @@ sweep(5)~
 ono testValue equaws 5~
 bite(^testValue)~
 ```
+
+## Pwompt
+**Description:** Prompts the user with a question for a response
+**Args:** Question String
+```
+owo name equaws pwompt("Enter your name:")~
+bark("Your name is ^name.")~
+```
