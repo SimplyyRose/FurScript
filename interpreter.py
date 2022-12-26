@@ -8,7 +8,9 @@ methods = {
     "paw": methods.paw,
     "sweep": methods.sweep,
     "bite": methods.bite,
-    "pwompt": methods.pwompt
+    "pwompt": methods.pwompt,
+    "pawsejson": methods.pawsejson,
+    "fetch": methods.fetch
 }
 
 equaws = "equaws"
@@ -60,7 +62,7 @@ def parse(script, body):
         else:
             parsing = False
 
-def _resolveString(script, string):
+def resolveString(script, string):
     for var in script.variables:
         varString = "^" + var
         while varString in string:
@@ -69,7 +71,7 @@ def _resolveString(script, string):
             if type(value) is dict:
                 index = string.find(varString)
                 startingPoint = index + len(varString) + 1
-                if string[startingPoint] == '[' and string.find(']', startingPoint) != -1:
+                if len(string) > startingPoint and string[startingPoint] == '[' and string.find(']', startingPoint) != -1:
                     key = string[startingPoint + 1:string.find(']', startingPoint)]
                     string = string.replace(varString + '["' + key + '"]', str(value[key]))
                 else:
@@ -77,6 +79,7 @@ def _resolveString(script, string):
             else:
                 string = string.replace('^' + var, str(value))
     for word in string.split(' '):
+        word = word[1:-1]
         if word.startswith('^'):
             string = string.replace(word, "None")
     return string
@@ -109,7 +112,7 @@ def typeFromString(script, string):
     if string.endswith(')'):
         return handleMethod(script, string)
     else:
-        string = _resolveString(script, string)
+        string = resolveString(script, string)
 
     if string.startswith('{') and string.endswith('}'):
         return json.loads(string)

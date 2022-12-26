@@ -1,29 +1,12 @@
 from time import sleep
+import json
+import interpreter
+import requests
 
 def bark(script, message):
     # TODO: Add support for multiple arguments and special operations
-    # TODO: Centralize this please for the love of Robin Hood, the disney movie one
     # Replace all variables with their values
-    if '^' in message:
-        for var in script.variables:
-            varString = "^" + var
-            while varString in message:
-                value = script.variables[var].value
-                # If value is dict
-                if type(value) is dict:
-                    index = message.find(varString)
-                    startingPoint = index + len(varString)
-                    if message[startingPoint] == '[' and message.find(']', startingPoint) != -1:
-                        key = message[startingPoint + 1:message.find(']', startingPoint)]
-                        message = message.replace(varString + '[' + key + ']', str(value[key[1:-1]]))
-                    else:
-                        message = message.replace('^' + var, str(value))
-                else:
-                    message = message.replace('^' + var, str(value))
-        for word in message.split(' '):
-            word = word[1:-1]
-            if word.startswith('^'):
-                message = message.replace(word, "None")
+    message = interpreter.resolveString(script, message)
 
     # Extract string from first and last quote
     if message.startswith('"') and message.endswith('"'):
@@ -52,3 +35,15 @@ def bite(script, message):
 
 def pwompt(script, message):
     return input(message)
+
+def pawsejson(script, message):
+    message = interpreter.resolveString(script, message)
+    if message.startswith('"') and message.endswith('"'):
+        message = message[1:-1]
+    return json.loads(message)
+
+def fetch(script, message):
+    message = interpreter.resolveString(script, message)
+    if message.startswith('"') and message.endswith('"'):
+        message = message[1:-1]
+    return requests.get(message).text
