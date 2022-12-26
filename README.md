@@ -38,7 +38,7 @@ bite(^testValue)~
 ```
 
 ## Pwompt
-**Description:** Prompts the user with a question for a response
+**Description:** Prompts the user with a question for a response <br>
 **Args:** Question String
 ```
 owo name equaws pwompt("Enter your name:")~
@@ -46,7 +46,7 @@ bark("Your name is ^name.")~
 ```
 
 ## Pawsejson
-**Description:** Parses a JSON string into a object
+**Description:** Parses a JSON string into a object <br>
 **Args:** String
 ```
 owo json equaws pawsejson("{"userId": 1, "name": "John"}")~
@@ -54,7 +54,7 @@ bark(^json)~
 ```
 
 ## Fetch
-**Description:** Issues a web request and returns back a String
+**Description:** Issues a web request and returns back a String <br>
 **Args:** URL String
 ```
 ono webText equaws fetch("https://jsonplaceholder.typicode.com/todos/1")~
