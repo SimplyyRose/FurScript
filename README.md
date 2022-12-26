@@ -44,3 +44,19 @@ bite(^testValue)~
 owo name equaws pwompt("Enter your name:")~
 bark("Your name is ^name.")~
 ```
+
+## Pawsejson
+**Description:** Parses a JSON string into a object
+**Args:** String
+```
+owo json equaws pawsejson("{"userId": 1, "name": "John"}")~
+bark(^json)~
+```
+
+## Fetch
+**Description:** Issues a web request and returns back a String
+**Args:** URL String
+```
+ono webText equaws fetch("https://jsonplaceholder.typicode.com/todos/1")~
+bark(^webText)~
+```
