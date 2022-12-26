@@ -145,6 +145,17 @@ def _parseInstruction(script, instruction):
             raise Exception("Cannot modify a variable with ONO modifier")
         
         script.variables[name] = Variable(name, value, modifier)
+    elif instruction.startswith("^"):
+        instruction = instruction[1:]
+        name = instruction[:instruction.find(equaws)]
+        value = instruction[instruction.find(equaws) + len(equaws):]
+        
+        # Parse true type
+        value = typeFromString(script, value)
+
+        # ONO variables cannot have their value modified
+        if name in script.variables and script.variables[name].modifier is not Modifier.ONO:
+            script.variables[name].value = value
     else:
         # Parse name and args from instruction
         name = instruction[:instruction.find('(')]
