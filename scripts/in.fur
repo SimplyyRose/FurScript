@@ -1,0 +1,6 @@
+ono object equaws {"people": [{"name": "John", "age": 25, "test": {"color": "blue", "food": "taco"}}, {"name": "Betty", "age": 26, "test": {"color": "blue", "food": "taco"}}, {"name": "Adam", "age": 20, "test": {"color": "blue", "food": "taco"}}]}~
+fur(^name un ^object["people"])
+    ono test equaws ^name["test"]~
+    bark(^test)~
+    bite(^test)~
+bop

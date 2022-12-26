@@ -11,11 +11,13 @@ methods = {
     "pwompt": methods.pwompt,
     "pawsejson": methods.pawsejson,
     "fetch": methods.fetch,
+    "fetchjson": methods.fetchjson,
     "stash": methods.stash
 }
 
 equaws = "equaws"
 untiw = "untiw"
+un = "un"
 
 keyWords = ["sniff", "fur", "bop"]
 
@@ -47,13 +49,25 @@ def parse(script, body):
             condition = substring[substring.find('(') + 1:substring.find(')')]
             contents = substring[substring.find(')') + 1:index]
 
-            leftSide = typeFromString(script, condition.split(untiw)[0])
-            rightSide = typeFromString(script, condition.split(untiw)[1])
-
-            while leftSide != rightSide:
-                parse(script, contents)
+            # Until for loop
+            if untiw in condition:
                 leftSide = typeFromString(script, condition.split(untiw)[0])
                 rightSide = typeFromString(script, condition.split(untiw)[1])
+
+                while leftSide != rightSide:
+                    parse(script, contents)
+                    leftSide = typeFromString(script, condition.split(untiw)[0])
+                    rightSide = typeFromString(script, condition.split(untiw)[1])
+            if un in condition:
+                name = condition.split(un)[0][1:]
+                script.variables[name] = Variable(name, None, Modifier.OWO)
+                items = resolveValue(script, condition.split(un)[1])
+
+                if type(items) is list:
+                    for item in items:
+                        script.variables[name].value = item
+                        parse(script, contents)
+                del script.variables[name]
         elif '~' in body:
             # Find the index of first '~' and substring it
             index = body.find('~')
@@ -63,6 +77,27 @@ def parse(script, body):
         else:
             parsing = False
 
+def resolveValue(script, string):
+    if string[0] != '^':
+        return typeFromString(script, string)
+    for var in script.variables:
+        varString = "^" + var
+        while varString in string:
+            value = script.variables[var].value
+            # If value is dict
+            if type(value) is dict:
+                index = string.find(varString)
+                startingPoint = index + len(varString)
+                
+                if len(string) > startingPoint and string[startingPoint] == '[' and string.find(']', startingPoint) != -1:
+                    key = string[startingPoint + 1:string.find(']', startingPoint)]
+                    return value[key[1:-1]]
+                else:
+                    return value
+            else:
+                return value
+    return typeFromString(script, string)
+
 def resolveString(script, string):
     for var in script.variables:
         varString = "^" + var
@@ -71,10 +106,11 @@ def resolveString(script, string):
             # If value is dict
             if type(value) is dict:
                 index = string.find(varString)
-                startingPoint = index + len(varString) + 1
+                startingPoint = index + len(varString)
+                
                 if len(string) > startingPoint and string[startingPoint] == '[' and string.find(']', startingPoint) != -1:
                     key = string[startingPoint + 1:string.find(']', startingPoint)]
-                    string = string.replace(varString + '["' + key + '"]', str(value[key]))
+                    string = string.replace(varString + '[' + key + ']', str(value[key[1:-1]]))
                 else:
                     string = string.replace('^' + var, str(value))
             else:
@@ -146,7 +182,7 @@ def _parseInstruction(script, instruction):
         value = instruction[instruction.find(equaws) + len(equaws):]
         
         # Parse true type
-        value = typeFromString(script, value)
+        value = resolveValue(script, value)
 
         # ONO variables cannot have their value modified
         if name in script.variables and script.variables[name].modifier is Modifier.ONO:
@@ -159,7 +195,7 @@ def _parseInstruction(script, instruction):
         value = instruction[instruction.find(equaws) + len(equaws):]
         
         # Parse true type
-        value = typeFromString(script, value)
+        value = resolveValue(script, value)
 
         # ONO variables cannot have their value modified
         if name in script.variables and script.variables[name].modifier is not Modifier.ONO:

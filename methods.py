@@ -43,8 +43,25 @@ def pawsejson(script, message):
 
 def fetch(script, message):
     message = interpreter.resolveString(script, message)
-    message = removeQuotes(message)
-    return requests.get(message).text
+    if ',' in message:
+        args = message.split(',')
+        url = removeQuotes(args[0])
+        user_agent = removeQuotes(args[1])
+        return requests.get(url, headers={'User-Agent': user_agent}).text
+    else:
+        url = removeQuotes(message)
+        return requests.get(url).text
+
+def fetchjson(script, message):
+    message = interpreter.resolveString(script, message)
+    if ',' in message:
+        args = message.split(',')
+        url = removeQuotes(args[0])
+        user_agent = removeQuotes(args[1])
+        return requests.get(url, headers={'User-Agent': user_agent}).json()
+    else:
+        url = removeQuotes(message)
+        return requests.get(url).json()
 
 def stash(script, message):
     message = interpreter.resolveString(script, message)
@@ -52,6 +69,10 @@ def stash(script, message):
 
     url = removeQuotes(args[0])
     path = removeQuotes(args[1])
+    user_agent = None
+
+    if len(args) > 2:
+        user_agent = removeQuotes(args[2])
 
     dir = path[:path.rfind('/')]
     if not os.path.exists(dir):
@@ -59,7 +80,10 @@ def stash(script, message):
 
     # download file from url at path
     with open(path, 'wb') as f:
-        f.write(requests.get(url).content)
+        if user_agent:
+            f.write(requests.get(url, headers={'User-Agent': user_agent}).content)
+        else:
+            f.write(requests.get(url).content)
 
 def removeQuotes(string):
     if string.startswith('"') and string.endswith('"'):
