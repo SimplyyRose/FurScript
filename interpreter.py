@@ -10,7 +10,8 @@ methods = {
     "bite": methods.bite,
     "pwompt": methods.pwompt,
     "pawsejson": methods.pawsejson,
-    "fetch": methods.fetch
+    "fetch": methods.fetch,
+    "stash": methods.stash
 }
 
 equaws = "equaws"

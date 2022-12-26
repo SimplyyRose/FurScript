@@ -2,6 +2,7 @@ from time import sleep
 import json
 import interpreter
 import requests
+import os
 
 def bark(script, message):
     # TODO: Add support for multiple arguments and special operations
@@ -9,8 +10,7 @@ def bark(script, message):
     message = interpreter.resolveString(script, message)
 
     # Extract string from first and last quote
-    if message.startswith('"') and message.endswith('"'):
-        message = message[1:-1]
+    message = removeQuotes(message)
 
     # Print
     print(message)
@@ -38,12 +38,30 @@ def pwompt(script, message):
 
 def pawsejson(script, message):
     message = interpreter.resolveString(script, message)
-    if message.startswith('"') and message.endswith('"'):
-        message = message[1:-1]
+    message = removeQuotes(message)
     return json.loads(message)
 
 def fetch(script, message):
     message = interpreter.resolveString(script, message)
-    if message.startswith('"') and message.endswith('"'):
-        message = message[1:-1]
+    message = removeQuotes(message)
     return requests.get(message).text
+
+def stash(script, message):
+    message = interpreter.resolveString(script, message)
+    args = message.split(',')
+
+    url = removeQuotes(args[0])
+    path = removeQuotes(args[1])
+
+    dir = path[:path.rfind('/')]
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
+    # download file from url at path
+    with open(path, 'wb') as f:
+        f.write(requests.get(url).content)
+
+def removeQuotes(string):
+    if string.startswith('"') and string.endswith('"'):
+        return string[1:-1]
+    return string

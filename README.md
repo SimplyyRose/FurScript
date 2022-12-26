@@ -4,14 +4,14 @@ More detailed description soon :tm:
 # Methods
 ## Bark
 **Description:** Prints out a message to the console. <br>
-**Args:** String
+**Args:** Message String
 ```
 bark("Hello World!")~
 ```
 
 ## Paw
 **Description:** Plus equals an amount to a int variable. <br>
-**Args:** Int variable, Int
+**Args:** Int variable, Amount Int
 ```
 owo currency equaws 10~
 paw(^currency, 5)~
@@ -22,7 +22,7 @@ bark(^currency)
 
 ## Sweep
 **Description:** Sleeps the main thread. <br>
-**Args:** Int
+**Args:** Seconds Int
 ```
 // Sleeps for 5 seconds
 sweep(5)~
@@ -47,7 +47,7 @@ bark("Your name is ^name.")~
 
 ## Pawsejson
 **Description:** Parses a JSON string into a object <br>
-**Args:** String
+**Args:** JSON String
 ```
 owo json equaws pawsejson("{"userId": 1, "name": "John"}")~
 bark(^json)~
@@ -59,4 +59,12 @@ bark(^json)~
 ```
 ono webText equaws fetch("https://jsonplaceholder.typicode.com/todos/1")~
 bark(^webText)~
+```
+
+## Stash
+**Description:** Downloads a file to a path <br>
+**Args:** URL String and Path String
+```
+stash("https://i.imgur.com/NuUoA9Z.jpeg", "./output/forest.jpeg")~
+bark("Downloaded forest.jpeg to output dir!")~
 ```

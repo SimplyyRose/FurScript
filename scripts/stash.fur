@@ -1,0 +1,2 @@
+stash("https://i.imgur.com/NuUoA9Z.jpeg", "./output/forest.jpeg")~
+bark("Downloaded forest.jpeg to output dir!")~

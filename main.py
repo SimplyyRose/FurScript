@@ -10,7 +10,7 @@ if not os.path.exists("scripts"):
     os.makedirs("scripts")
 
 if sys.argv.__len__() > 1:
-    file = open(os.path.join("scripts", sys.argv[1]))
+    file = open(sys.argv[1])
     s = Script(file)
     s.run()
 else:
