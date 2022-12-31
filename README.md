@@ -1,5 +1,7 @@
-Fun project to experiment with learning language design.
-More detailed description soon :tm:
+Fun project to experiment with learning language design. <br>
+
+[VSCode Extension](https://github.com/SimplyyRose/FurScriptVSC) for syntax highlighting (WIP).<br>
+
 
 # Methods
 ## Bark
