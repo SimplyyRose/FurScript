@@ -1,0 +1,4 @@
+ono array equaws ["Hello", 55, true]~
+fur(^item un ^array)
+  bark(^item)~
+bop

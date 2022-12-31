@@ -153,6 +153,11 @@ def typeFromString(script, string):
 
     if string.startswith('{') and string.endswith('}'):
         return json.loads(string)
+    elif string.startswith('[') and string.endswith(']'):
+        items = string[1:-1].split(',')
+        for i in range(len(items)):
+            items[i] = typeFromString(script, items[i])
+        return items
     elif string.startswith('"') and string.endswith('"'):
         return string[1:-1]
     elif string == "True" or string == "False":
