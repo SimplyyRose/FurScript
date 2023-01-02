@@ -12,7 +12,8 @@ methods = {
     "pawsejson": methods.pawsejson,
     "fetch": methods.fetch,
     "fetchjson": methods.fetchjson,
-    "stash": methods.stash
+    "stash": methods.stash,
+    "wandom": methods.wandom,
 }
 
 equaws = "equaws"
@@ -115,10 +116,6 @@ def resolveString(script, string):
                     string = string.replace('^' + var, str(value))
             else:
                 string = string.replace('^' + var, str(value))
-    for word in string.split(' '):
-        word = word[1:-1]
-        if word.startswith('^'):
-            string = string.replace(word, "None")
     return string
 
 def findEndingIndex(body, index):
@@ -146,12 +143,23 @@ def findEndingIndex(body, index):
     return endingIndex
 
 def typeFromString(script, string):
+    if string == 'None':
+        return None
+
+    name = string[1:]
+    if name in script.variables:
+        if string.startswith('$'):
+            return script.variables[name]
+        elif string.startswith('^'):
+            return script.variables[name].value
+
     if string.endswith(')'):
         return handleMethod(script, string)
     else:
         string = resolveString(script, string)
 
     if string.startswith('{') and string.endswith('}'):
+        print(string)
         return json.loads(string)
     elif string.startswith('[') and string.endswith(']'):
         items = string[1:-1].split(',')
@@ -167,7 +175,7 @@ def typeFromString(script, string):
     elif string.endswith('f'):
         return float(string.replace('f', ''))
     elif string.startswith('^'):
-        return script.variables[string[1:]].value
+        return None
     else:
         return string
 
@@ -211,9 +219,36 @@ def _parseInstruction(script, instruction):
 def handleMethod(script, instruction):
     # Parse name and args from instruction
     name = instruction[:instruction.find('(')]
-    args = instruction[instruction.find('(') + 1:instruction.find(')')]
+    argText = instruction[instruction.find('(') + 1:instruction.rfind(')')]
+    args = []
+
+    if argText.count(',') > 0:
+        for arg in splitComma(argText):
+            args.append(typeFromString(script, arg))
+    else:
+        args.append(typeFromString(script, argText))
 
     # Check if method exists
     if name in methods:
         method = methods[name]
         return method(script, args)
+
+def splitComma(string):
+    result = []
+    index = 0
+    stringStarted = False
+    parenthesisStarted = False
+
+    for i in range(len(string)):
+        if string[i] == '"':
+            stringStarted = not stringStarted
+        elif string[i] == '(': 
+            parenthesisStarted = True
+        elif string[i] == ')':
+            parenthesisStarted = False
+        elif string[i] == ',' and not stringStarted and not parenthesisStarted:
+            result.append(string[index:i])
+            index = i + 1
+    
+    result.append(string[index:])
+    return result

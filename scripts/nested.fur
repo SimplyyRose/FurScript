@@ -5,7 +5,7 @@ owo name equaws "John"~
 // Runs a counter for 5 seconds
 // Then stops the for loop when the counter is completed
 fur(^running untiw True)
-    paw(^counter, 1)~
+    paw($counter, 1)~
     bark("Running for ^counter seconds!")~
     sweep(1)~
 
@@ -27,7 +27,7 @@ fur(^running untiw True)
             owo subCounter equaws 0~
 
             fur(^subCounter untiw 5)
-                paw(^subCounter, 1)~
+                paw($subCounter, 1)~
                 bark("Meowing ^subCounter")~
             bop
         bop

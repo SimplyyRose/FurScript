@@ -2,5 +2,5 @@ ono object equaws {"people": [{"name": "John", "age": 25, "test": {"color": "blu
 fur(^name un ^object["people"])
     ono test equaws ^name["test"]~
     bark(^test)~
-    bite(^test)~
+    bite($test)~
 bop

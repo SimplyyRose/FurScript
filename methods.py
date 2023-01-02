@@ -3,76 +3,53 @@ import json
 import interpreter
 import requests
 import os
+import random
 
-def bark(script, message):
-    # TODO: Add support for multiple arguments and special operations
-    # Replace all variables with their values
-    message = interpreter.resolveString(script, message)
+def bark(script, args):
+    message = args[0]
+    
+    if type(message) is str:
+        message = interpreter.resolveString(script, message)
+    else:
+        message = str(message)
 
-    # Extract string from first and last quote
-    message = removeQuotes(message)
-
-    # Print
     print(message)
 
-def paw(script, message):
-    args = message.split(',')
-    variable = args[0]
-    amount = args[1]
+def paw(script, args):
+    args[0].value += args[1]
 
-    if amount.startswith('^'):
-        amount = script.variables[amount[1:]].value
+def sweep(script, args):
+    sleep(args[0])
 
-    script.variables[variable[1:]].value += int(amount)
+def bite(script, args):
+    del script.variables[args[0].name]
 
-def sweep(script, message):
-    value = int(message)
-    sleep(value)
+def pwompt(script, args):
+    return input(args[0])
 
-def bite(script, message):
-    if message.startswith('^'):
-        del script.variables[message[1:]]
+def pawsejson(script, args):
+    contents = removeQuotes(args[0])
+    return json.loads(contents)
 
-def pwompt(script, message):
-    return input(message)
-
-def pawsejson(script, message):
-    message = interpreter.resolveString(script, message)
-    message = removeQuotes(message)
-    return json.loads(message)
-
-def fetch(script, message):
-    message = interpreter.resolveString(script, message)
-    if ',' in message:
-        args = message.split(',')
-        url = removeQuotes(args[0])
-        user_agent = removeQuotes(args[1])
-        return requests.get(url, headers={'User-Agent': user_agent}).text
+def fetch(script, args):
+    if len(args) > 1:
+        return requests.get(args[0], headers={'User-Agent': args[1]}).text
     else:
-        url = removeQuotes(message)
-        return requests.get(url).text
+        return requests.get(args[0]).text
 
-def fetchjson(script, message):
-    message = interpreter.resolveString(script, message)
-    if ',' in message:
-        args = message.split(',')
-        url = removeQuotes(args[0])
-        user_agent = removeQuotes(args[1])
-        return requests.get(url, headers={'User-Agent': user_agent}).json()
+def fetchjson(script, args):
+    if len(args) > 1:
+        return requests.get(args[0], headers={'User-Agent': args[1]}).json()
     else:
-        url = removeQuotes(message)
-        return requests.get(url).json()
+        return requests.get(args[0]).json()
 
-def stash(script, message):
-    message = interpreter.resolveString(script, message)
-    args = message.split(',')
-
-    url = removeQuotes(args[0])
-    path = removeQuotes(args[1])
+def stash(script, args):
+    url = args[0]
+    path = args[1]
     user_agent = None
 
     if len(args) > 2:
-        user_agent = removeQuotes(args[2])
+        user_agent = args[2]
 
     dir = path[:path.rfind('/')]
     if not os.path.exists(dir):
@@ -84,6 +61,12 @@ def stash(script, message):
             f.write(requests.get(url, headers={'User-Agent': user_agent}).content)
         else:
             f.write(requests.get(url).content)
+
+def wandom(script, args):
+    if len(args) == 1:
+        return random.randint(1, args[0])
+    else:
+        return random.randint(args[0], args[1])
 
 def removeQuotes(string):
     if string.startswith('"') and string.endswith('"'):
