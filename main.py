@@ -28,4 +28,4 @@ else:
         s.run()
 
 end = datetime.datetime.now()
-print("Run time: " + str(end - start))
+print(f"Time taken: {end - start} seconds")

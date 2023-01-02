@@ -3,7 +3,7 @@ import re
 import methods
 import json
 
-methods = {
+methodMap = {
     "bark": methods.bark,
     "paw": methods.paw,
     "sweep": methods.sweep,
@@ -190,7 +190,7 @@ def _parseInstruction(script, instruction):
 
     # Check for variable declaration
     if modifier is not Modifier.NONE:
-        instruction = instruction[len(mod.name.lower()):]
+        instruction = instruction[len(modifier.name.lower()):]
         name = instruction[:instruction.find(equaws)]
         value = instruction[instruction.find(equaws) + len(equaws):]
         
@@ -229,24 +229,24 @@ def handleMethod(script, instruction):
         args.append(typeFromString(script, argText))
 
     # Check if method exists
-    if name in methods:
-        method = methods[name]
+    if name in methodMap:
+        method = methodMap[name]
         return method(script, args)
 
 def splitComma(string):
     result = []
     index = 0
-    stringStarted = False
-    parenthesisStarted = False
+    insideString = False
+    insideMethodArgs = False
 
     for i in range(len(string)):
         if string[i] == '"':
-            stringStarted = not stringStarted
+            insideString = not insideString
         elif string[i] == '(': 
-            parenthesisStarted = True
+            insideMethodArgs = True
         elif string[i] == ')':
-            parenthesisStarted = False
-        elif string[i] == ',' and not stringStarted and not parenthesisStarted:
+            insideMethodArgs = False
+        elif string[i] == ',' and not insideString and not insideMethodArgs:
             result.append(string[index:i])
             index = i + 1
     
