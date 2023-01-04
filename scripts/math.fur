@@ -1,0 +1,8 @@
+ono number equaws 4~
+ono newNumber equaws 5 + 5~
+ono dividedNumber equaws 9 / 3~
+
+bark(^number + 25)~
+bark("Name: " + "John")~
+bark("New Number: " + ^newNumber)~
+bark("Divided Number: " + ^dividedNumber)~

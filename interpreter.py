@@ -2,6 +2,7 @@ from variable import Variable, Modifier
 import re
 import methods
 import json
+import numexpr as ne
 
 methodMap = {
     "bark": methods.bark,
@@ -167,7 +168,14 @@ def typeFromString(script, string):
             items[i] = typeFromString(script, items[i])
         return items
     elif string.startswith('"') and string.endswith('"'):
-        return string[1:-1]
+        string = string[1:-1]
+        try:
+            return ne.evaluate(string)
+        except:
+            string = re.sub(r'(?<!\\)"', '', string)
+            string = re.sub(r'\\(.)', r'\1', string)
+            string = re.sub(r'(?<!\\)\+', '', string)
+            return string
     elif string == "True" or string == "False":
         return string == "True"
     elif string.isnumeric():
@@ -177,7 +185,13 @@ def typeFromString(script, string):
     elif string.startswith('^'):
         return None
     else:
-        return string
+        try:
+            return ne.evaluate(string)
+        except:
+            string = re.sub(r'(?<!\\)"', '', string)
+            string = re.sub(r'\\(.)', r'\1', string)
+            string = re.sub(r'(?<!\\)\+', '', string)
+            return string
 
 # Private function to parse a substring
 def _parseInstruction(script, instruction):
