@@ -1,0 +1,17 @@
+mew randomAnimal()
+    owo num equaws wandom(1, 3)~
+
+    sniff(^num equaws 1)~
+        nudges "Fish"~
+    bop
+
+    sniff(^num equaws 2)~
+        nudges "Dog"~
+    bop
+
+    sniff(^num equaws 3)~
+        nudges "Cat"~
+    bop
+bop
+
+bark(randomAnimal())~

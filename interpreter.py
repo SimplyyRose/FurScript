@@ -41,7 +41,7 @@ def parse(script, body):
             rightSide = typeFromString(script, condition.split(equaws)[1])
 
             if leftSide == rightSide:
-                parse(script, contents)
+                return parse(script, contents)
         elif body.startswith("fur"):
             index = findEndingIndex(body, 3)
             substring = body[:index - 3]
@@ -57,7 +57,9 @@ def parse(script, body):
                 rightSide = typeFromString(script, condition.split(untiw)[1])
 
                 while leftSide != rightSide:
-                    parse(script, contents)
+                    response = parse(script, contents)
+                    if response is not None:
+                        return response
                     leftSide = typeFromString(script, condition.split(untiw)[0])
                     rightSide = typeFromString(script, condition.split(untiw)[1])
             if un in condition:
@@ -68,7 +70,7 @@ def parse(script, body):
                 if type(items) is list:
                     for item in items:
                         script.variables[name].value = item
-                        parse(script, contents)
+                        return parse(script, contents)
                 del script.variables[name]
         elif body.startswith("mew"):
             index = findEndingIndex(body, 3)
@@ -80,6 +82,11 @@ def parse(script, body):
             args = substring[substring.find('(') + 1:substring.find(')')]
             contents = substring[substring.find(')') + 1:index]
             methodMap[name] = contents
+        elif body.startswith("nudges"):
+            index = body.find('~')
+            substring = body[:index]
+            body = body[index + 1:]
+            return resolveValue(script, substring[6:])
         elif '~' in body:
             # Find the index of first '~' and substring it
             index = body.find('~')
@@ -88,6 +95,7 @@ def parse(script, body):
             _parseInstruction(script, substring)
         else:
             parsing = False
+    return None
 
 def resolveValue(script, string):
     if string[0] != '^':
@@ -256,7 +264,9 @@ def handleMethod(script, instruction):
     if name in methodMap:
         method = methodMap[name]
         if type(method) is str:
-            parse(script, method)
+            returnValue = parse(script, method)
+            if returnValue is not None:
+                return returnValue
         else:
             return method(script, args)
 
