@@ -1,0 +1,6 @@
+mew greetUser()
+    ono name equaws pwompt("What is your name? ")~
+    bark("Well hello there, ^name!")~
+bop
+
+greetUser()~

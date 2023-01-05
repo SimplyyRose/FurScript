@@ -21,7 +21,7 @@ equaws = "equaws"
 untiw = "untiw"
 un = "un"
 
-keyWords = ["sniff", "fur", "bop"]
+keyWords = ["sniff", "fur", "bop", "mew"]
 
 def parse(script, body):
     parsing = True
@@ -70,6 +70,16 @@ def parse(script, body):
                         script.variables[name].value = item
                         parse(script, contents)
                 del script.variables[name]
+        elif body.startswith("mew"):
+            index = findEndingIndex(body, 3)
+            substring = body[:index]
+            body = body[index:]
+
+            # Parse args and contents
+            name = substring[3:substring.find(')') - 1]
+            args = substring[substring.find('(') + 1:substring.find(')')]
+            contents = substring[substring.find(')') + 1:index]
+            methodMap[name] = contents
         elif '~' in body:
             # Find the index of first '~' and substring it
             index = body.find('~')
@@ -245,7 +255,10 @@ def handleMethod(script, instruction):
     # Check if method exists
     if name in methodMap:
         method = methodMap[name]
-        return method(script, args)
+        if type(method) is str:
+            parse(script, method)
+        else:
+            return method(script, args)
 
 def splitComma(string):
     result = []
