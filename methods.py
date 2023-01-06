@@ -27,10 +27,6 @@ def bite(script, args):
 def pwompt(script, args):
     return input(args[0])
 
-def pawsejson(script, args):
-    contents = removeQuotes(args[0])
-    return json.loads(contents)
-
 def fetch(script, args):
     if len(args) > 1:
         return requests.get(args[0], headers={'User-Agent': args[1]}).text

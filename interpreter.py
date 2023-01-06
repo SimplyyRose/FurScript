@@ -10,16 +10,11 @@ methodMap = {
     "sweep": methods.sweep,
     "bite": methods.bite,
     "pwompt": methods.pwompt,
-    "pawsejson": methods.pawsejson,
     "fetch": methods.fetch,
     "fetchjson": methods.fetchjson,
     "stash": methods.stash,
     "wandom": methods.wandom,
 }
-
-equaws = "equaws"
-untiw = "untiw"
-un = "un"
 
 keyWords = ["sniff", "fur", "bop", "mew"]
 
@@ -28,61 +23,71 @@ def parse(script, body):
 
     while parsing:
         # Check for if statement
-        if body.startswith("sniff"):
+        if body.startswith('sniff'):
             index = findEndingIndex(body, 5)
             substring = body[:index]
             body = body[index:]
                         
             # Parse condition and contents
-            condition = substring[substring.find('(') + 1:substring.find(')')]
-            contents = substring[substring.find(')') + 1:index]
+            rightParenIndex = substring.find(')')
+            condition = substring[substring.find('(') + 1:rightParenIndex]
+            contents = substring[rightParenIndex + 1:index]
 
-            leftSide = typeFromString(script, condition.split(equaws)[0])
-            rightSide = typeFromString(script, condition.split(equaws)[1])
+            splitCondition = condition.split('equaws')
+            leftSide = typeFromString(script, splitCondition[0])
+            rightSide = typeFromString(script, splitCondition[1])
 
             if leftSide == rightSide:
-                return parse(script, contents)
+                response = parse(script, contents)
+                if response is not None:
+                    return response
         elif body.startswith("fur"):
             index = findEndingIndex(body, 3)
             substring = body[:index - 3]
             body = body[index:]
 
             # Parse condition and contents
-            condition = substring[substring.find('(') + 1:substring.find(')')]
-            contents = substring[substring.find(')') + 1:index]
+            rightParenIndex = substring.find(')')
+            condition = substring[substring.find('(') + 1:rightParenIndex]
+            contents = substring[rightParenIndex + 1:index]
 
             # Until for loop
-            if untiw in condition:
-                leftSide = typeFromString(script, condition.split(untiw)[0])
-                rightSide = typeFromString(script, condition.split(untiw)[1])
+            if 'untiw' in condition:
+                splitCondition = condition.split('untiw')
+                leftSide = typeFromString(script, splitCondition[0])
+                rightSide = typeFromString(script, splitCondition[1])
 
                 while leftSide != rightSide:
                     response = parse(script, contents)
                     if response is not None:
                         return response
-                    leftSide = typeFromString(script, condition.split(untiw)[0])
-                    rightSide = typeFromString(script, condition.split(untiw)[1])
-            if un in condition:
-                name = condition.split(un)[0][1:]
+                    leftSide = typeFromString(script, condition.split('untiw')[0])
+                    rightSide = typeFromString(script, condition.split('untiw')[1])
+            if 'un' in condition:
+                splitCondition = condition.split('un')
+                name = splitCondition[0][1:]
                 script.variables[name] = Variable(name, None, Modifier.OWO)
-                items = resolveValue(script, condition.split(un)[1])
+                items = resolveValue(script, splitCondition[1])
 
                 if type(items) is list:
                     for item in items:
                         script.variables[name].value = item
-                        return parse(script, contents)
+                        response = parse(script, contents)
+                        if response is not None:
+                            return response
                 del script.variables[name]
-        elif body.startswith("mew"):
+        elif body.startswith('mew'):
             index = findEndingIndex(body, 3)
             substring = body[:index]
             body = body[index:]
 
             # Parse args and contents
-            name = substring[3:substring.find(')') - 1]
-            args = substring[substring.find('(') + 1:substring.find(')')]
-            contents = substring[substring.find(')') + 1:index]
+            rightParenIndex = substring.find(')')
+            name = substring[3:rightParenIndex - 1]
+            args = substring[substring.find('(') + 1:rightParenIndex]
+            contents = substring[rightParenIndex + 1:index]
             methodMap[name] = contents
-        elif body.startswith("nudges"):
+        elif body.startswith('nudges'):
             index = body.find('~')
             substring = body[:index]
             body = body[index + 1:]
@@ -101,16 +106,14 @@ def resolveValue(script, string):
     if string[0] != '^':
         return typeFromString(script, string)
     for var in script.variables:
-        varString = "^" + var
+        varString = '^' + var
         while varString in string:
             value = script.variables[var].value
             # If value is dict
             if type(value) is dict:
-                index = string.find(varString)
-                startingPoint = index + len(varString)
-                
-                if len(string) > startingPoint and string[startingPoint] == '[' and string.find(']', startingPoint) != -1:
-                    key = string[startingPoint + 1:string.find(']', startingPoint)]
+                index = string.find(varString) + len(varString)                
+                if len(string) > index and string[index] == '[' and string.find(']', index) != -1:
+                    key = string[index + 1:string.find(']', index)]
                     return value[key[1:-1]]
                 else:
                     return value
@@ -125,11 +128,10 @@ def resolveString(script, string):
             value = script.variables[var].value
             # If value is dict
             if type(value) is dict:
-                index = string.find(varString)
-                startingPoint = index + len(varString)
+                index = string.find(varString) + len(varString)
                 
-                if len(string) > startingPoint and string[startingPoint] == '[' and string.find(']', startingPoint) != -1:
-                    key = string[startingPoint + 1:string.find(']', startingPoint)]
+                if len(string) > index and string[index] == '[' and string.find(']', index) != -1:
+                    key = string[index + 1:string.find(']', index)]
                     string = string.replace(varString + '[' + key + ']', str(value[key[1:-1]]))
                 else:
                     string = string.replace('^' + var, str(value))
@@ -155,7 +157,7 @@ def findEndingIndex(body, index):
             keyWord = keyWords[i]
             endingIndex = smallest + len(keyWord)
 
-            if keyWord == "bop":
+            if keyWord is 'bop':
                 openBraces -= 1
             else:
                 openBraces += 1
@@ -178,7 +180,9 @@ def typeFromString(script, string):
         string = resolveString(script, string)
 
     if string.startswith('{') and string.endswith('}'):
-        print(string)
+        return json.loads(string)
+    if string.startswith('"{') and string.endswith('}"'):
+        string = string[1:-1]
         return json.loads(string)
     elif string.startswith('[') and string.endswith(']'):
         items = string[1:-1].split(',')
@@ -186,15 +190,8 @@ def typeFromString(script, string):
             items[i] = typeFromString(script, items[i])
         return items
     elif string.startswith('"') and string.endswith('"'):
-        string = string[1:-1]
-        try:
-            return ne.evaluate(string)
-        except:
-            string = re.sub(r'(?<!\\)"', '', string)
-            string = re.sub(r'\\(.)', r'\1', string)
-            string = re.sub(r'(?<!\\)\+', '', string)
-            return string
-    elif string == "True" or string == "False":
+        return handleString(string[1:-1])
+    elif string is 'True' or string is 'False':
         return string == "True"
     elif string.isnumeric():
         return int(string)
@@ -203,13 +200,7 @@ def typeFromString(script, string):
     elif string.startswith('^'):
         return None
     else:
-        try:
-            return ne.evaluate(string)
-        except:
-            string = re.sub(r'(?<!\\)"', '', string)
-            string = re.sub(r'\\(.)', r'\1', string)
-            string = re.sub(r'(?<!\\)\+', '', string)
-            return string
+        return handleString(string)
 
 # Private function to parse a substring
 def _parseInstruction(script, instruction):
@@ -220,11 +211,17 @@ def _parseInstruction(script, instruction):
         if instruction.startswith(mod.name.lower()):
             modifier = mod
 
+    varReference = instruction.startswith('^')
+
     # Check for variable declaration
-    if modifier is not Modifier.NONE:
-        instruction = instruction[len(modifier.name.lower()):]
-        name = instruction[:instruction.find(equaws)]
-        value = instruction[instruction.find(equaws) + len(equaws):]
+    if modifier is not Modifier.NONE or varReference:
+        if varReference:
+            instruction = instruction[1:]
+        else:
+            instruction = instruction[len(modifier.name):]
+        equawsIndex = instruction.find('equaws')
+        name = instruction[:equawsIndex]
+        value = instruction[equawsIndex + 6:]
         
         # Parse true type
         value = resolveValue(script, value)
@@ -233,28 +230,21 @@ def _parseInstruction(script, instruction):
         if name in script.variables and script.variables[name].modifier is Modifier.ONO:
             raise Exception("Cannot modify a variable with ONO modifier")
         
-        script.variables[name] = Variable(name, value, modifier)
-    elif instruction.startswith("^"):
-        instruction = instruction[1:]
-        name = instruction[:instruction.find(equaws)]
-        value = instruction[instruction.find(equaws) + len(equaws):]
-        
-        # Parse true type
-        value = resolveValue(script, value)
-
-        # ONO variables cannot have their value modified
-        if name in script.variables and script.variables[name].modifier is not Modifier.ONO:
+        if varReference:
             script.variables[name].value = value
+        else:
+            script.variables[name] = Variable(name, value, modifier)
     else:
         handleMethod(script, instruction)
 
 def handleMethod(script, instruction):
     # Parse name and args from instruction
-    name = instruction[:instruction.find('(')]
-    argText = instruction[instruction.find('(') + 1:instruction.rfind(')')]
+    leftParenIndex = instruction.find('(')
+    name = instruction[:leftParenIndex]
+    argText = instruction[leftParenIndex + 1:instruction.rfind(')')]
     args = []
 
-    if argText.count(',') > 0:
+    if ',' in argText:
         for arg in splitComma(argText):
             args.append(typeFromString(script, arg))
     else:
@@ -289,3 +279,12 @@ def splitComma(string):
     
     result.append(string[index:])
     return result
+
+def handleString(string):
+    try:
+        return ne.evaluate(string)
+    except:
+        string = re.sub(r'(?<!\\)"', '', string)
+        string = re.sub(r'\\(.)', r'\1', string)
+        string = re.sub(r'(?<!\\)\+', '', string)
+        return string
