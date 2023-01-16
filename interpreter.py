@@ -16,7 +16,7 @@ methodMap = {
     "wandom": methods.wandom,
 }
 
-keyWords = ["sniff", "fur", "bop", "mew"]
+keyWords = ["twy>", "sniff", "fur", "bop", "mew"]
 
 def parse(script, body):
     parsing = True
@@ -87,6 +87,27 @@ def parse(script, body):
             args = substring[substring.find('(') + 1:rightParenIndex]
             contents = substring[rightParenIndex + 1:index]
             methodMap[name] = contents
+        elif body.startswith('twy>'):
+            index = findEndingIndex(body, 4)
+            substring = body[:index]
+            body = body[index:]
+
+            catchIndex = substring.find('catch')
+            tryContents = substring[4:catchIndex]
+            rightParenIndex = substring.find(')')
+            catchContents = substring[rightParenIndex + 1:index - 3]
+            exceptionVarName = substring[substring.find('(') + 1:rightParenIndex]
+
+            try:
+                response = parse(script, tryContents)
+                if response is not None:
+                    return response
+            except Exception as e:
+                script.variables[exceptionVarName] = Variable(exceptionVarName, str(e), Modifier.ONO)
+                response = parse(script, catchContents)
+                del script.variables[exceptionVarName]
+                if response is not None:
+                    return response
         elif body.startswith('nudges'):
             index = body.find('~')
             substring = body[:index]
@@ -157,7 +178,7 @@ def findEndingIndex(body, index):
             keyWord = keyWords[i]
             endingIndex = smallest + len(keyWord)
 
-            if keyWord is 'bop':
+            if keyWord == 'bop':
                 openBraces -= 1
             else:
                 openBraces += 1
@@ -191,7 +212,7 @@ def typeFromString(script, string):
         return items
     elif string.startswith('"') and string.endswith('"'):
         return handleString(string[1:-1])
-    elif string is 'True' or string is 'False':
+    elif string == 'True' or string == 'False':
         return string == "True"
     elif string.isnumeric():
         return int(string)

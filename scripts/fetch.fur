@@ -1,4 +1,2 @@
-ono webText equaws fetch("https://jsonplaceholder.typicode.com/todos/1")~
-ono json equaws pawsejson(^webText)~
-bite($webText)~
-bark(^json)~
+ono webText equaws fetchjson("https://jsonplaceholder.typicode.com/todos/1")~
+bark(^webText)~
