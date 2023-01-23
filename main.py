@@ -21,7 +21,7 @@ else:
             continue
 
         # Open file
-        file = open(os.path.join("scripts", filename))
+        file = open(os.path.join("scripts", filename), mode='r', encoding="utf8")
 
         # Create script object
         s = Script(file)
