@@ -1,0 +1,11 @@
+#wedefine "public static void" mew
+#wedefine System.out.println bark
+#wedefine ; ~
+#wedefine { 
+#wedefine } bop
+
+public static void sayHello() {
+    System.out.println("Hello World!");
+}
+
+sayHello();

@@ -25,7 +25,6 @@ class Script:
             body += line
 
         for key, value in self.redefines.items():
-            # From body regex replace all 'key' with 'value' that aren't between quotes
             body = re.sub(re.escape(key) + '+(?=([^"]*"[^"]*")*[^"]*$)', value, body)
 
         # From body remove all spaces that aren't between quotes
@@ -34,5 +33,12 @@ class Script:
 
     def __handle_metatag(self, tag):
         if tag.startswith("wedefine"):
-            tagArgs = tag.split(" ")
-            self.redefines[tagArgs[1]] = " ".join(tagArgs[2:])
+            tagArgs = tag.split(' ')
+
+            if tagArgs[1].startswith('"'):
+                index = tag.find('"', 1)
+                index2 = tag.find('"', index + 1)
+                key = tag[index + 1:index2]
+                self.redefines[key] = tag[index2 + 2:]
+            else:
+                self.redefines[tagArgs[1]] = " ".join(tagArgs[2:])           
