@@ -2,17 +2,25 @@ import re
 import interpreter
 
 class Script:
-    def __init__(self, file):
+    def __init__(self, file=None):
         self.file = file
         self.variables = {}
         self.redefines = {}
 
-    def run(self):
-        print("Running script from path: {}".format(self.file.name))
-
+    def run(self, code=None):
         body = ""
+        lines = None
 
-        for line in self.file:
+        if code is not None:
+            lines = code.split("\n")
+        elif self.file is not None:
+            print("Running script from path: {}".format(self.file.name))
+            lines = self.file
+        else:
+            print("No code or file provided")
+            return
+
+        for line in lines:
             # Strip and ignore empty lines
             line = line.rstrip("\n")
             if line == "" or line.lstrip().startswith("//"): 
@@ -29,7 +37,7 @@ class Script:
 
         # From body remove all spaces that aren't between quotes
         body = re.sub(r'\s+(?=([^"]*"[^"]*")*[^"]*$)', '', body)
-        interpreter.parse(self, body)
+        return interpreter.parse(self, body)
 
     def __handle_metatag(self, tag):
         if tag.startswith("wedefine"):

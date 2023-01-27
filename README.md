@@ -70,3 +70,17 @@ bark(^webText)~
 stash("https://i.imgur.com/NuUoA9Z.jpeg", "./output/forest.jpeg")~
 bark("Downloaded forest.jpeg to output dir!")~
 ```
+
+# Code Examples
+## Interpret FurScript code
+You can create an empty script and run FurScript code against it.
+Run can return a value if a return is hit in the FurScript code. This example would return 10.
+```python
+from script import Script
+
+code = '''ono newNumber equaws 5+5~\n
+nudges ^newNumber~'''
+
+script = Script()
+print(str(script.run(code)))
+```
