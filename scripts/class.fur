@@ -1,0 +1,16 @@
+cwass Gweeter>
+    owo userName~
+
+    constwucter(userName, numbers)
+        ^dis.userName equaws ^userName~
+        bark(^dis.userName)~
+        bark(^numbers)~
+    bop
+
+    mew greetUser()
+        bark("Well hello there, ^userName!")~
+    bop
+bop
+
+ono gweeter equaws cweate Gweeter("Bob", [1,2,3])~
+^gweeter.greetUser()~

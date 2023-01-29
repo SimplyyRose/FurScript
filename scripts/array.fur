@@ -4,6 +4,10 @@ ono array equaws [
   true
 ]~
 
+owo item equaws "MEOW"~
+
 fur(^item un ^array)
   bark(^item)~
 bop
+
+bark(^item)~

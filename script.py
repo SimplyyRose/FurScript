@@ -6,6 +6,7 @@ class Script:
         self.file = file
         self.variables = {}
         self.redefines = {}
+        self.classes = {}
 
     def run(self, code=None):
         body = ""
@@ -49,4 +50,4 @@ class Script:
                 key = tag[index + 1:index2]
                 self.redefines[key] = tag[index2 + 2:]
             else:
-                self.redefines[tagArgs[1]] = " ".join(tagArgs[2:])           
+                self.redefines[tagArgs[1]] = " ".join(tagArgs[2:])
